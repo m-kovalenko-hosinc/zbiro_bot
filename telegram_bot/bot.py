@@ -19,9 +19,26 @@ async def sum_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     await update.message.reply_text(str(ZbirobotService().get_total_amount()))
 
 
+async def add_jar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    args = context.args
+    if len(args) < 1:
+        await update.message.reply_text("Не вказано ID банки")
+        return
+
+    jar_widget_url = args[0]
+    title = ' '.join(args[1:]) if args[1:] else None
+    try:
+        jar = ZbirobotService().add_jar(jar_widget_url, title)
+        await update.message.reply_text(f"Банка{' ' + jar.title} успішно додана")
+    except Exception as e:
+        logger.error(e)
+        await update.message.reply_text("Не вдалося додати банку")
+
+
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("sum", sum_command))
+    app.add_handler(CommandHandler("add_jar", add_jar_command))
 
     app.run_polling()
 
