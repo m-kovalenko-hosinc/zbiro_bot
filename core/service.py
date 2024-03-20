@@ -19,6 +19,10 @@ class ZbirobotService:
         jar = Jar(long_jar_id=long_jar_id, title=title)
         return JarsRepository.add_jar(jar)
 
+    @staticmethod
+    def get_jars() -> list[Jar]:
+        return JarsRepository.get_all_jars()
+
 
 if __name__ == '__main__':
     service = ZbirobotService()

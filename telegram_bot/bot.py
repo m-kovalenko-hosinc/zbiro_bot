@@ -35,10 +35,16 @@ async def add_jar_command(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await update.message.reply_text("Не вдалося додати банку")
 
 
+async def get_all_jars_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    jars = ZbirobotService().get_jars()
+    await update.message.reply_text('\n'.join([f"{jar.title}: {jar.long_jar_id}" for jar in jars]))
+
+
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("sum", sum_command))
     app.add_handler(CommandHandler("add_jar", add_jar_command))
+    app.add_handler(CommandHandler("all_jars", get_all_jars_command))
 
     app.run_polling()
 
