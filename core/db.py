@@ -7,4 +7,4 @@ class Base(DeclarativeBase):
 
 
 engine = create_engine("sqlite:///zbirobot.db", echo=True)
-Session = sessionmaker(engine)
+Session = sessionmaker(engine, expire_on_commit=False)
