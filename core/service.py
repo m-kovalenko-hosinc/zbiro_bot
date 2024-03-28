@@ -1,12 +1,22 @@
+import requests
+
+from core.constants import JAR_BALANCE_URL_PREFIX
 from core.models import Jar
 from core.repositories import JarsRepository
 
 
 class ZbirobotService:
     @staticmethod
-    def get_total_amount() -> float:
+    def get_jar_balance(jar: Jar) -> float:
+        url = JAR_BALANCE_URL_PREFIX + jar.long_jar_id
+        response = requests.get(url).json()
+
+        return response["amount"]
+
+    @classmethod
+    def get_total_amount(cls) -> float:
         jars = JarsRepository.get_all_jars()
-        amount_in_kopeks = sum([jar.get_current_balance() for jar in jars])
+        amount_in_kopeks = sum([cls.get_jar_balance(jar) for jar in jars])
         return float(amount_in_kopeks) / 100
 
     @staticmethod

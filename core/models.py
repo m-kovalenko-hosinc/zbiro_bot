@@ -1,10 +1,8 @@
 from typing import Optional, List
 
-import requests
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from core.constants import JAR_BALANCE_URL_PREFIX
 from core.db import Base
 
 
@@ -20,12 +18,6 @@ class Jar(Base):
 
     def __repr__(self):
         return f"Jar(id={self.id}, long_jar_id={self.long_jar_id}, title={self.title})"
-
-    def get_current_balance(self):
-        url = JAR_BALANCE_URL_PREFIX + self.long_jar_id
-        response = requests.get(url).json()
-
-        return response["amount"]
 
 
 class User(Base):
