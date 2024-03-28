@@ -1,5 +1,5 @@
 from core.db import Session
-from core.models import Jar
+from core.models import Jar, User, Project
 
 
 class JarsRepository:
@@ -25,3 +25,36 @@ class JarsRepository:
         with Session() as session:
             session.delete(jar)
             session.commit()
+
+
+class UsersRepository:
+    @staticmethod
+    def get_user(telegram_id: str) -> User | None:
+        with Session() as session:
+            return session.query(User).filter(User.telegram_id == telegram_id).first()
+
+    @staticmethod
+    def add_user(user: User) -> User:
+        with Session() as session:
+            session.add(user)
+            session.commit()
+            return user
+
+
+class ProjectsRepository:
+    @staticmethod
+    def create_project(project: Project) -> Project:
+        with Session() as session:
+            session.add(project)
+            session.commit()
+            return project
+
+    @staticmethod
+    def get_user_active_projects(user: User) -> list[Project]:
+        with Session() as session:
+            return session.query(Project).filter(Project.owner == user, Project.active == True).all()
+
+    @staticmethod
+    def get_project_by_title(title: str) -> Project | None:
+        with Session() as session:
+            return session.query(Project).filter(Project.title == title).first()
