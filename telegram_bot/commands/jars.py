@@ -3,6 +3,7 @@ import logging
 from telegram import Update
 from telegram.ext import ContextTypes
 
+from core.exceptions import JarAlreadyExists
 from core.services import JarsService, ProjectsService
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,9 @@ async def add_jar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     title = ' '.join(args[1:]) if args[1:] else None
     try:
         jar = JarsService().add_jar(widget_url=jar_widget_url, title=title, project=project)
-        await update.message.reply_text(f"Банка{' ' + jar.title} успішно додана до збору {project.title}")
+        await update.message.reply_text(f"Банка{' ' + jar.title if jar.title else ''} успішно додана до збору {project.title}")
+    except JarAlreadyExists:
+        await update.message.reply_text("Ця банка вже додана до збору")
     except Exception as e:
         logger.error(e)
         await update.message.reply_text("Не вдалося додати банку")
