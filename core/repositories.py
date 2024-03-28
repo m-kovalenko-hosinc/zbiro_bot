@@ -1,4 +1,7 @@
+from psycopg2 import errors
+
 from core.db import Session
+from core.exceptions import JarAlreadyExists
 from core.models import Jar, User, Project
 
 
@@ -16,9 +19,12 @@ class JarsRepository:
     @staticmethod
     def add_jar(jar: Jar):
         with Session() as session:
-            session.add(jar)
-            session.commit()
-            return jar
+            try:
+                session.add(jar)
+                session.commit()
+                return jar
+            except errors.UniqueViolation:
+                raise JarAlreadyExists()
 
     @staticmethod
     def delete_jar(jar: Jar):
@@ -58,3 +64,18 @@ class ProjectsRepository:
     def get_project_by_title(title: str) -> Project | None:
         with Session() as session:
             return session.query(Project).filter(Project.title == title).first()
+
+    @staticmethod
+    def follow_project(user: User, project: Project):
+        with Session() as session:
+            session.add(user)
+            session.add(project)
+            user.followed_projects.append(project)
+            session.commit()
+
+    @staticmethod
+    def get_user_followed_projects(user_telegram_id: str) -> list[Project]:
+        with Session() as session:
+            user = UsersRepository.get_user(user_telegram_id)
+            session.add(user)
+            return user.followed_projects

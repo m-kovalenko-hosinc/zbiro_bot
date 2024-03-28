@@ -40,16 +40,23 @@ class JarsService:
         return JarsRepository.get_all_jars()
 
 
+class UsersService:
+    @staticmethod
+    def get_or_create_user(telegram_user: TelegramUser) -> User:
+        user = UsersRepository.get_user(str(telegram_user.id))
+        if user is None:
+            user = UsersRepository.add_user(
+                User(telegram_id=str(telegram_user.id), nickname=telegram_user.username,
+                     first_name=telegram_user.first_name, last_name=telegram_user.last_name)
+            )
+
+        return user
+
+
 class ProjectsService:
     @staticmethod
     def add_project(owner: TelegramUser, title: str, description: str | None) -> Project:
-        user = UsersRepository.get_user(str(owner.id))
-        if user is None:
-            user = UsersRepository.add_user(
-                User(telegram_id=str(owner.id), nickname=owner.username, first_name=owner.first_name,
-                     last_name=owner.last_name)
-            )
-
+        user = UsersService().get_or_create_user(owner)
         project = Project(title=title, description=description, owner=user)
         ProjectsRepository.create_project(project)
 
@@ -77,3 +84,13 @@ class ProjectsService:
             for project in projects:
                 session.add(project)
             return {project.title: project.jars for project in projects}
+
+    @staticmethod
+    def follow_project(user: TelegramUser, project_title: str) -> None:
+        user = UsersService().get_or_create_user(user)
+        project = ProjectsService().get_project_by_title(project_title)
+        ProjectsRepository.follow_project(user, project)
+
+    @staticmethod
+    def get_followed_projects(user: TelegramUser) -> list[Project]:
+        return ProjectsRepository.get_user_followed_projects(str(user.id))

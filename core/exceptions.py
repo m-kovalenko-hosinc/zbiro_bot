@@ -1,0 +1,4 @@
+
+
+class JarAlreadyExists(Exception):
+    pass
