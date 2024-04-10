@@ -12,5 +12,6 @@ async def help(update: Update, _: ContextTypes.DEFAULT_TYPE) -> None:
                                     '/all_jars - показати всі банки\n'
                                     '/add_project - додати збір\n'
                                     '/follow_project - підписатись на збір\n'
+                                    '/unfollow_all - відписатись від усіх зборів\n'
                                     '/deactivate_project - закрити збір\n'
                                     '/sum - показати суму по збору')

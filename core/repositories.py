@@ -81,6 +81,13 @@ class ProjectsRepository:
             return user.followed_projects
 
     @staticmethod
+    def remove_all_follows(user: User):
+        with Session() as session:
+            session.add(user)
+            user.followed_projects = []
+            session.commit()
+
+    @staticmethod
     def deactivate_project(project: Project):
         with Session() as session:
             session.add(project)

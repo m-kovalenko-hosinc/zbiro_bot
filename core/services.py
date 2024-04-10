@@ -92,6 +92,11 @@ class ProjectsService:
         ProjectsRepository.follow_project(user, project)
 
     @staticmethod
+    def unfollow_all(user: TelegramUser) -> None:
+        user = UsersService().get_or_create_user(user)
+        ProjectsRepository.remove_all_follows(user)
+
+    @staticmethod
     def deactivate_project(project: Project) -> None:
         ProjectsRepository.deactivate_project(project)
 
