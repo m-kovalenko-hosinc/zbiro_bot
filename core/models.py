@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from sqlalchemy import ForeignKey, Table, Column
+from sqlalchemy import ForeignKey, Table, Column, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.db import Base
@@ -10,11 +10,15 @@ class Jar(Base):
     __tablename__ = "jars"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    long_jar_id: Mapped[str] = mapped_column(unique=True, nullable=False)
+    long_jar_id: Mapped[str] = mapped_column(nullable=False)
     title: Mapped[Optional[str]]
 
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
     project: Mapped["Project"] = relationship(back_populates="jars")
+
+    __table_args__ = (
+        UniqueConstraint('long_jar_id', 'project_id', name='_project_jar_uc'),
+    )
 
     def __repr__(self):
         return f"Jar(id={self.id}, long_jar_id={self.long_jar_id}, title={self.title})"
