@@ -53,3 +53,28 @@ async def follow_project(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     ProjectsService().follow_project(update.effective_user, project_title)
     await update.message.reply_text(f"Ви підписались на збір {project_title}. "
                                     f"Спробуйте команду /sum для прогресу по збору!")
+
+
+async def deactivate_project(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    projects = ProjectsService().get_user_projects(update.effective_user)
+
+    match len(projects):
+        case 0:
+            await update.message.reply_text("У вас немає активних зборів")
+        case 1:
+            project = projects[0]
+            ProjectsService().deactivate_project(project)
+            await update.message.reply_text(f"Збір {project.title} деактивовано")
+        case _:
+            args = context.args
+            if len(args) < 1:
+                await update.message.reply_text("У вас більше ніж один активний збір. Для деактивації вкажіть назву збору після команди /deactivate_project")
+                return
+
+            project_title = " ".join(args)
+            try:
+                ProjectsService().deactivate_by_title(project_title)
+                await update.message.reply_text(f"Збір {project_title} деактивовано")
+
+            except ValueError:
+                await update.message.reply_text(f"Збір з назвою {project_title} не знайдено")

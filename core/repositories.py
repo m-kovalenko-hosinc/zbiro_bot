@@ -79,3 +79,10 @@ class ProjectsRepository:
             user = UsersRepository.get_user(user_telegram_id)
             session.add(user)
             return user.followed_projects
+
+    @staticmethod
+    def deactivate_project(project: Project):
+        with Session() as session:
+            session.add(project)
+            project.active = False
+            session.commit()

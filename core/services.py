@@ -92,5 +92,16 @@ class ProjectsService:
         ProjectsRepository.follow_project(user, project)
 
     @staticmethod
+    def deactivate_project(project: Project) -> None:
+        ProjectsRepository.deactivate_project(project)
+
+    @staticmethod
+    def deactivate_by_title(project_title: str) -> None:
+        project = ProjectsService().get_project_by_title(project_title)
+        if project is None:
+            raise ValueError("Project not found")
+        ProjectsRepository.deactivate_project(project)
+
+    @staticmethod
     def get_followed_projects(user: TelegramUser) -> list[Project]:
         return ProjectsRepository.get_user_followed_projects(str(user.id))
