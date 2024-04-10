@@ -55,6 +55,11 @@ async def follow_project(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                                     f"Спробуйте команду /sum для прогресу по збору!")
 
 
+async def unfollow_all(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    ProjectsService().unfollow_all(update.effective_user)
+    await update.message.reply_text("Ви відписались від усіх зборів")
+
+
 async def deactivate_project(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     projects = ProjectsService().get_user_projects(update.effective_user)
 
